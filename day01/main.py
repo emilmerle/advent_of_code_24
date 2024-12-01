@@ -1,22 +1,24 @@
 from pathlib import Path
 
+
 def algorithm_1(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as f:
         left_list = []
         right_list = []
         for line in f:
+            # find the first space in the line
             index = line.index(" ")
             # first number is before the first space
             # second number is after the third space
             left_list.append(int(line[:index]))
-            right_list.append(int(line[index+2:]))
+            right_list.append(int(line[index + 2 :]))
         left_list = sorted(left_list)
         right_list = sorted(right_list)
         # sum up the differences of every number pair
-        answer = sum([abs(a - b) for a,b in zip(left_list, right_list)])
+        answer = sum([abs(a - b) for a, b in zip(left_list, right_list)])
         return answer
-    
+
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
@@ -24,11 +26,12 @@ def algorithm_2(input_filename: str) -> int:
         left_list = []
         right_list = []
         for line in f:
+            # find the first space in the line
             index = line.index(" ")
             # first number is before the first space
             # second number is after the third space
             left_list.append(int(line[:index]))
-            right_list.append(int(line[index+2:]))
+            right_list.append(int(line[index + 2 :]))
         left_list = sorted(left_list)
         right_list = sorted(right_list)
         # count occurences of left item in right list and multiply the number with the number of occurences
@@ -42,21 +45,25 @@ def test_part1():
     algorithm_answer = algorithm_1(filename)
     return expected_answer == algorithm_answer
 
+
 def test_part2():
     filename = "./input_files/test.txt"
     expected_answer = 31
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
+
 def solve_part1():
     filename = "./input_files/puzzle.txt"
     algorithm_answer = algorithm_1(filename)
     return algorithm_answer
 
+
 def solve_part2():
     filename = "./input_files/puzzle.txt"
     algorithm_answer = algorithm_2(filename)
     return algorithm_answer
+
 
 if __name__ == "__main__":
     if test_part1():
