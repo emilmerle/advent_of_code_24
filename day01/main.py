@@ -1,5 +1,12 @@
 from pathlib import Path
 
+"""
+Idea Part 1:
+Make a list for every column of numbers -> left and right.
+Sort them and iterate over them to compare every pair of numbers.
+Get the difference for every pair and sum them up.
+"""
+
 
 def algorithm_1(input_filename: str) -> int:
     path = Path(input_filename)
@@ -18,6 +25,15 @@ def algorithm_1(input_filename: str) -> int:
         # sum up the differences of every number pair
         answer = sum([abs(a - b) for a, b in zip(left_list, right_list)])
         return answer
+
+
+"""
+Idea Part 2:
+Make a list for every column of numbers -> left and right.
+Iterate over the first list and count the number of occurences of every number in the second list.
+(Here a map could be used, but for simplicity the number of occurences for every number is counted individually)
+Multiply the number of occurences with the actual number and sum these up.
+"""
 
 
 def algorithm_2(input_filename: str) -> int:

@@ -6,10 +6,21 @@ path = Path(input_filename)
 with open(path, "r") as f:
 """
 
+"""
+Idea Part 1:
+
+"""
+
 
 def algorithm_1(input_filename: str) -> int:
     answer = 1
     return answer
+
+
+"""
+Idea Part 2:
+
+"""
 
 
 def algorithm_2(input_filename: str) -> int:
