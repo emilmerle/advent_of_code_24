@@ -31,6 +31,7 @@ def algorithm_1(input_filename: str) -> int:
 Idea Part 2:
 For every report, try removing one number (level) at a time and check if the report is safe,
 until a safe report is found, otherwise, the report is not safe.
+Yes, this is not very nice, but other solutions are much more complex to code.
 """
 
 
