@@ -22,51 +22,47 @@ def algorithm_1(input_filename: str) -> int:
         safe_reports = 0
         for line in f:
             report = [int(x) for x in line.split()]
-            if check_report_part1(report):
+            if is_safe_report(report):
                 safe_reports += 1
-
         return safe_reports
 
-    answer = safe_reports
-    return answer
 
 """
 Idea Part 2:
-
+For every report, try removing one number (level) at a time and check if the report is safe,
+until a safe report is found, otherwise, the report is not safe.
 """
+
+
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as f:
         safe_reports = 0
         for line in f:
             report = [int(x) for x in line.split()]
-            is_report_safe = check_report_part2(report)
-            print(report, is_report_safe)
-            if is_report_safe:
+            if check_report_part2(report):
                 safe_reports += 1
-
         return safe_reports
-
-    answer = safe_reports
-    return answer
-    
-    
-    
-    
-    
-    answer = safe_reports
-    return answer
-
 
 
 # Helping functions:
+def check_report_part2(report: list) -> bool:
+    for index in range(len(report)):
+        if is_safe_report(report[:index] + report[index + 1 :]):
+            return True
+
+    return False
+
+
 """
 Check if levels are increasing or decreasing with the first two elements.
 Then check if all other differences have the same sign and difference under 4 with check_two().
 Then check if the list contains only True values with all().
 """
-def check_report_part1(report: list) -> bool:
-    reverse = True if report[0] - report[1] > 0 else False
+
+
+def is_safe_report(report: list) -> bool:
+    reverse = is_reverse(report)
     is_safe_report = all(
         [
             check_two(report[index], report[index + 1], reverse)
@@ -76,49 +72,20 @@ def check_report_part1(report: list) -> bool:
     return is_safe_report
 
 
+# This checks if two numbers are "sorted" and if the difference is under 4
 def check_two(first: int, second: int, reverse: bool) -> bool:
     if not reverse:
         return True if -4 < first - second < 0 else False
     else:
         return True if 4 > first - second > 0 else False
 
-def check_report_part2(report: list) -> bool:
-    reverse = is_reverse(report)
-    index = 0
-    number_removed = False
-    while index < len(report) - 2:
-        if check_two(report[index], report[index + 1], reverse):
-            index += 1
-        elif number_removed:
-            return False
-        else:
-            if index == 0:
-                index += 1
-                continue
-            if check_two(report[index], report[index + 2], reverse):
-                number_removed = True
-                index += 2
-            else:
-                return False
-            
-        
-
-    if not check_two(report[-2], report[-1], reverse):
-        if number_removed:
-            return False
-        
-    if not check_two(report[0], report[1], reverse) and not number_removed:
-        return True
-
-    return True
 
 # This checks if the list is "sorted" in reverse direction or not
-# Could lead to errors in special cases!!!
 def is_reverse(report: list) -> bool:
-    differences_list = [report[index] - report[index + 1] for index in range(len(report) - 1)]
-    return True if sum(differences_list) > 0 else False
-
-
+    differences_list = [
+        report[index] - report[index + 1] for index in range(len(report) - 1)
+    ]
+    return True if sum([-1 if x < 0 else 1 for x in differences_list]) > 0 else False
 
 
 # Testing and solving functions
@@ -131,7 +98,7 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 44
+    expected_answer = 4
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
