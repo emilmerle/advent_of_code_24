@@ -1,11 +1,5 @@
 from pathlib import Path
 
-# Code Snippet for reading a file:
-"""
-path = Path(input_filename)
-with open(path, "r") as f:
-"""
-
 """
 Idea Part 1:
 
@@ -13,8 +7,9 @@ Idea Part 1:
 
 
 def algorithm_1(input_filename: str) -> int:
-    answer = 1
-    return answer
+    path = Path(input_filename)
+    with open(path, "r") as file:
+        pass
 
 
 """
@@ -24,8 +19,9 @@ Idea Part 2:
 
 
 def algorithm_2(input_filename: str) -> int:
-    answer = 2
-    return answer
+    path = Path(input_filename)
+    with open(path, "r") as file:
+        pass
 
 
 # Testing and solving functions
