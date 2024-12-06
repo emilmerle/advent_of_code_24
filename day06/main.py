@@ -55,8 +55,9 @@ THIS DOES NOT COVER THE CASE, WHEN THE LOOP HAS MORE THAN 4 CORNERS!!!
 Idea 3:
 In every step, place an obstacle in front and check for a loop.
 STILL DOES NOT WORK!!!
-Somewhere it stated: Obstacles must be placed before the guard moves.
-This solution does probably not account for that yet.
+A comment on Reddit stated: Obstacles must be placed before the guard moves.
+Now, do not start from the current position but from the starting position to detect loops.
+This solves the problem.
 """
 
 
@@ -74,42 +75,33 @@ def algorithm_2(input_filename: str) -> int:
         direction = (-1, 0)
         current_position = deepcopy(starting_pos)
 
-        loops_detected = 0
         obstacle_positions = []
-        steps = 0
         while not is_out_of_bounds(lab_map, current_position):
 
             # Create a deepcopy of the map, position and direction
             # Place and obstacle right in front of the player
             # Then check if the map has loops
+            # Do not start from the current position but the starting position!
             potential_map = deepcopy(lab_map)
             potential_position = deepcopy(current_position)
             potential_direction = deepcopy(direction)
             potential_map = place_obstacle_in_front(
                 potential_map, potential_position, potential_direction
             )
-            loop = has_loop(potential_map, potential_position, potential_direction)
+            loop = has_loop(potential_map, starting_pos, (-1, 0))
             if loop:
                 obstacle_position = (
                     potential_position[0] + potential_direction[0],
                     potential_position[1] + potential_direction[1],
                 )
                 obstacle_positions.append(obstacle_position)
-                loops_detected += 1
 
             lab_map, current_position, direction = move(
                 lab_map, current_position, direction
             )
 
-            steps += 1
-
-        print(f"Steps: {steps}")
-        print(f"{loops_detected} loops detected.")
-        print(
-            f"Starting position in obstacle positions: {starting_pos in obstacle_positions}"
-        )
-        print(f"Unique obstacle positions: {len(set(obstacle_positions))}")
-        return loops_detected
+        # Only count unique obstacle positions
+        return len(set(obstacle_positions))
 
 
 def has_loop(
@@ -131,8 +123,6 @@ def has_loop(
                 visited_positions[temp_position].append(temp_direction)
         elif temp_position not in visited_positions:
             visited_positions[temp_position] = [temp_direction]
-        else:
-            print("Edge Case?")
 
         # Actual Move
         temp_map, temp_position, temp_direction = move(
