@@ -54,6 +54,9 @@ THIS DOES NOT COVER THE CASE, WHEN THE LOOP HAS MORE THAN 4 CORNERS!!!
 
 Idea 3:
 In every step, place an obstacle in front and check for a loop.
+STILL DOES NOT WORK!!!
+Somewhere it stated: Obstacles must be placed before the guard moves.
+This solution does probably not account for that yet.
 """
 
 
@@ -69,7 +72,7 @@ def algorithm_2(input_filename: str) -> int:
                 starting_pos = (index_x, lab_map[index_x].index("^"))
 
         direction = (-1, 0)
-        current_position = starting_pos
+        current_position = deepcopy(starting_pos)
 
         loops_detected = 0
         obstacle_positions = []
@@ -101,8 +104,11 @@ def algorithm_2(input_filename: str) -> int:
             steps += 1
 
         print(f"Steps: {steps}")
-        print(loops_detected)
-        print(obstacle_positions)
+        print(f"{loops_detected} loops detected.")
+        print(
+            f"Starting position in obstacle positions: {starting_pos in obstacle_positions}"
+        )
+        print(f"Unique obstacle positions: {len(set(obstacle_positions))}")
         return loops_detected
 
 
