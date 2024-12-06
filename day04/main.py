@@ -1,11 +1,10 @@
 from pathlib import Path
 
-
 """
 Idea Part 1:
 Search for every "X" in the file.
 Search all possible positions for the word "XMAS" from that starting "X".
-THIS IS NOT PRETTY!!! :(
+THIS IS NOT VERY PRETTY!!! :(
 """
 
 
