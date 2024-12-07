@@ -6,7 +6,8 @@ Idea Part 1:
 Try every permutation of operators.
 Check if the result of this combination matches the desired result.
 """
-OPERATORS = ["+", "*"]
+OPERATORS_PART_1 = ["+", "*"]
+OPERATORS_PART_2 = ["+", "*", "||"]
 
 
 def algorithm_1(input_filename: str) -> int:
@@ -19,7 +20,9 @@ def algorithm_1(input_filename: str) -> int:
             operands = [int(number) for number in line.split(":")[1][1:-1].split(" ")]
             permutations = [
                 perm
-                for perm in itertools.product(OPERATORS, repeat=(len(operands) - 1))
+                for perm in itertools.product(
+                    OPERATORS_PART_1, repeat=(len(operands) - 1)
+                )
             ]
             for perm in permutations:
                 operand_index = 1
@@ -31,8 +34,6 @@ def algorithm_1(input_filename: str) -> int:
                     elif operator == "*":
                         perm_result *= operands[operand_index]
                         operand_index += 1
-                    else:
-                        print("Edge Case?")
                 if perm_result == result:
                     total_sum += result
                     break
@@ -42,14 +43,49 @@ def algorithm_1(input_filename: str) -> int:
 
 """
 Idea Part 2:
-
+Try every permutation of operators.
+Check if the result of this combination matches the desired result.
+Concatenation of two numbers is done with string concatenation in python.
+Convert both numbers to string, concatante and convert the result back to int.
 """
 
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as file:
-        pass
+        total_sum = 0
+        for line in file:
+            result = int(line.split(":")[0])
+            # remove the first " " and the "\n" characters from every line
+            operands = [int(number) for number in line.split(":")[1][1:-1].split(" ")]
+            permutations = [
+                perm
+                for perm in itertools.product(
+                    OPERATORS_PART_2, repeat=(len(operands) - 1)
+                )
+            ]
+            for perm in permutations:
+                operand_index = 1
+                perm_result = operands[0]
+                for operator in perm:
+                    if operator == "+":
+                        perm_result += operands[operand_index]
+                        operand_index += 1
+                    elif operator == "*":
+                        perm_result *= operands[operand_index]
+                        operand_index += 1
+                    elif operator == "||":
+                        # String concatenation is easier:
+                        # just convert to string, concatenate and convert back to int
+                        perm_result = int(
+                            str(perm_result) + str(operands[operand_index])
+                        )
+                        operand_index += 1
+                if perm_result == result:
+                    total_sum += result
+                    break
+
+        return total_sum
 
 
 # Testing and solving functions
@@ -62,7 +98,7 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 31
+    expected_answer = 11387
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
