@@ -96,17 +96,16 @@ def algorithm_2(input_filename: str) -> int:
         for perm in permutations:
             distance = calculate_distance(perm[0], perm[1])
             position_1 = (perm[0][0] - distance[0], perm[0][1] - distance[1])
+            while is_in_bounds(position_1, dim_x, dim_y):
+                if position_1 not in unique_antinode_locations:
+                    unique_antinode_locations.append(position_1)
+                position_1 = (position_1[0] - distance[0], position_1[1] - distance[1])
+
             position_2 = (perm[1][0] + distance[0], perm[1][1] + distance[1])
-            if (
-                is_in_bounds(position_1, dim_x, dim_y)
-                and position_1 not in unique_antinode_locations
-            ):
-                unique_antinode_locations.append(position_1)
-            if (
-                is_in_bounds(position_2, dim_x, dim_y)
-                and position_2 not in unique_antinode_locations
-            ):
-                unique_antinode_locations.append(position_2)
+            while is_in_bounds(position_2, dim_x, dim_y):
+                if position_2 not in unique_antinode_locations:
+                    unique_antinode_locations.append(position_2)
+                position_2 = (position_2[0] - distance[0], position_2[1] - distance[1])
 
     return len(unique_antinode_locations)
 
@@ -132,7 +131,7 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 31
+    expected_answer = 34
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
