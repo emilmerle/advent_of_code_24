@@ -24,6 +24,9 @@ def algorithm_2(input_filename: str) -> int:
         pass
 
 
+# Helping functions
+
+
 # Testing and solving functions
 def test_part1() -> bool:
     filename = "./input_files/test.txt"
