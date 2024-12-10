@@ -3,7 +3,7 @@ from pathlib import Path
 """
 Idea Part 1:
 Search for every trailhead.
-Then start searching every hiking trail from there.
+Then start searching how many 9-positions can be reached.
 """
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
@@ -22,7 +22,7 @@ def algorithm_1(input_filename: str) -> int:
             (index_x, n) for (n, e) in enumerate(topographic_map[index_x]) if e == "0"
         ]
         for trailhead_position in trailhead_positions:
-            trailhead_score = calculate_trailhead_score(
+            trailhead_score = calculate_trailhead_score_part1(
                 topographic_map, trailhead_position
             )
             total_score_sum += trailhead_score
@@ -31,14 +31,30 @@ def algorithm_1(input_filename: str) -> int:
 
 """
 Idea Part 2:
-
+Search for every trailhead.
+Then start searching how many unique trails can reach a 9-position
 """
 
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as file:
-        pass
+        topographic_map = []
+        for line in file:
+            topographic_map.append(line[:-1])
+
+    total_score_sum = 0
+    dim_x, dim_y = len(topographic_map), len(topographic_map[0])
+    for index_x in range(dim_x):
+        trailhead_positions = [
+            (index_x, n) for (n, e) in enumerate(topographic_map[index_x]) if e == "0"
+        ]
+        for trailhead_position in trailhead_positions:
+            trailhead_score = calculate_trailhead_score_part2(
+                topographic_map, trailhead_position
+            )
+            total_score_sum += trailhead_score
+    return total_score_sum
 
 
 # Helping functions
@@ -66,7 +82,28 @@ def get_next_positions(
     return next_positions
 
 
-def calculate_trailhead_score(
+def calculate_trailhead_score_part1(
+    topographic_map: list[str], position: tuple[int, int]
+) -> int:
+    trailhead_score = 0
+    next_positions = get_next_positions(topographic_map, position)
+    while next_positions != []:
+        print(next_positions)
+        new_positions = []
+        for next_position in next_positions:
+            new_positions += get_next_positions(topographic_map, next_position)
+
+        end_positions = new_positions.count((-1, -1))
+        trailhead_score += end_positions
+
+        # we need to remove duplicate positions here
+        new_positions = list(set(new_positions))
+        if (-1, -1) in new_positions:
+            new_positions.remove((-1, -1))
+        next_positions = new_positions
+    return trailhead_score
+
+def calculate_trailhead_score_part2(
     topographic_map: list[str], position: tuple[int, int]
 ) -> int:
     trailhead_score = 0
@@ -79,7 +116,8 @@ def calculate_trailhead_score(
         end_positions = new_positions.count((-1, -1))
         trailhead_score += end_positions
 
-        new_positions = list(set(new_positions))
+        # we do not need to remove duplicate positions here
+        # new_positions = list(set(new_positions))
         if (-1, -1) in new_positions:
             new_positions.remove((-1, -1))
         next_positions = new_positions
@@ -96,7 +134,7 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 31
+    expected_answer = 81
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
