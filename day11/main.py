@@ -19,14 +19,21 @@ def algorithm_1(input_filename: str) -> int:
 
 """
 Idea Part 2:
-
+Same approach as part 1 is not possible, because the number of stones will be too large.
+Idea:
+Do not calculate every blink, but calculate number of stones after 75 times separately (with other rules).
 """
 
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as file:
-        pass
+        stones = [int(number) for number in next(file).split(" ")]
+        for i in range(75):
+            print(f"Beginning {i+1} blink.")
+            stones = blink(stones)
+        print(len(stones))
+        return len(stones)
 
 
 # Helping functions
