@@ -29,8 +29,8 @@ def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as file:
         stones = [int(number) for number in next(file).split(" ")]
-        for i in range(75):
-            print(f"Beginning {i+1} blink.")
+        for i in range(1, 75 + 1):
+            # print(f"Beginning {i+1} blink.")
             stones = blink(stones)
         print(len(stones))
         return len(stones)
@@ -44,18 +44,33 @@ def blink(stones: list[int]) -> list[int]:
     return next_stones
 
 
+def blink_part2(stones: list[int]) -> list[int]:
+    blinks = {}
+    next_total_stones = []
+    for index, stone in enumerate(stones):
+        if stone not in blinks:
+            next_stones = apply_rules(stone)
+            blinks[stone] = next_stones
+        else:
+            next_stones = blinks[stone]
+        next_total_stones += next_stones
+    return next_total_stones
+
+
 def apply_rules(stone: int) -> list[int]:
+    next_stones = []
     if stone == 0:
-        return [1]
+        next_stones = [1]
     else:
         string_stone = str(stone)
         if len(string_stone) % 2 == 0:
-            return [
+            next_stones = [
                 int(string_stone[: len(string_stone) // 2]),
                 int(string_stone[len(string_stone) // 2 :]),
             ]
         else:
-            return [stone * 2024]
+            next_stones = [stone * 2024]
+    return next_stones
 
 
 # Testing and solving functions
@@ -86,6 +101,8 @@ def solve_part2() -> int:
 
 
 if __name__ == "__main__":
+    test()
+
     if test_part1():
         answer = solve_part1()
         print(f"Todays answer of part 1 is {answer}")
