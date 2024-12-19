@@ -1,3 +1,4 @@
+from functools import cache
 from pathlib import Path
 
 """
@@ -9,35 +10,33 @@ So: NOT POSSIBLE!
 Idea 2:
 Start with the longest availabe pattern has the same error!
 Idea 3:
+Try every string with the removed pattern if the string begins with the pattern.
+Recursively count how many possiblities there are.
+ONLY POSSIBLE WITH CACHING!!!
 """
 
 
 def algorithm_1(input_filename: str) -> int:
+    @cache
+    def count(wanted: str):
+        possibilities = sum(
+            count(wanted.removeprefix(p))
+            for p in available_patterns
+            if wanted.startswith(p)
+        )
+        return possibilities or wanted == ""
+
     path = Path(input_filename)
     with open(path, "r") as file:
         available_patterns = [pattern for pattern in next(file)[:-1].split(", ")]
         next(file)
-        not_possible = 0
+        possible_patterns = 0
         for line in file:
             desired_pattern = line[:-1]
-            while desired_pattern != "":
-                index = 1
-                while True:
-                    if index > len(desired_pattern):
-                        not_possible += 1
-                        desired_pattern = ""
-                        break
-                    searched_for = desired_pattern[:index]
-                    print(searched_for)
-                    if searched_for in available_patterns:
-                        desired_pattern = desired_pattern[index:]
-                        print(desired_pattern)
-                        break
-                    index += 1
-            print(not_possible)
-                
-
-
+            possible = count(desired_pattern)
+            if possible != False:
+                possible_patterns += 1
+        return possible_patterns
 
 
 """
@@ -47,9 +46,26 @@ Idea Part 2:
 
 
 def algorithm_2(input_filename: str) -> int:
+    @cache
+    def count(wanted: str):
+        possibilities = sum(
+            count(wanted.removeprefix(p))
+            for p in available_patterns
+            if wanted.startswith(p)
+        )
+        return possibilities or wanted == ""
+
     path = Path(input_filename)
     with open(path, "r") as file:
-        pass
+        available_patterns = [pattern for pattern in next(file)[:-1].split(", ")]
+        next(file)
+        possible_combinations = 0
+        for line in file:
+            desired_pattern = line[:-1]
+            possible = count(desired_pattern)
+            if possible != False:
+                possible_combinations += possible
+        return possible_combinations
 
 
 # Helping functions
@@ -65,7 +81,7 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 31
+    expected_answer = 16
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 
