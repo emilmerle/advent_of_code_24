@@ -42,8 +42,28 @@ Idea Part 2:
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
+    visited_positions = []
+    regions = []
+    garden = []
+    dim_x, dim_y = 0, 0
     with open(path, "r") as file:
-        pass
+        garden = [line[:-1] for line in file]
+        dim_x, dim_y = len(garden), len(garden[0])
+
+    for index_x in range(dim_x):
+        for index_y in range(dim_y):
+            position = (index_x, index_y)
+            # Skip current position if already visited
+            if position in visited_positions:
+                continue
+
+            neighbors = get_whole_region(garden, position)
+            visited_positions += neighbors
+            current_region = neighbors
+            regions.append(current_region)
+
+    total_price = sum(get_price_of_region(garden, region) for region in regions)
+    return total_price
 
 
 # Helping functions
@@ -100,6 +120,22 @@ def get_price_of_region(garden: list[str], region: list[tuple[int, int]]) -> int
     return perimeter * area
 
 
+def get_bulk_price_of_region(garden: list[str], region: list[tuple[int, int]]) -> int:
+    area = len(region)
+    edges = 0
+    # Number of edges is equal to the number of corners
+    # TODO
+    return area * edges
+
+
+def get_perimeter_positions(
+    garden: list[str], region: list[tuple[int, int]]
+) -> list[tuple[int, int]]:
+    # TODO
+    # Get perimeter and count number of corners there
+    return
+
+
 # Testing and solving functions
 def test_part1() -> bool:
     filename = "./input_files/test_1.txt"
@@ -120,9 +156,19 @@ def test_part1() -> bool:
 
 def test_part2() -> bool:
     filename = "./input_files/test_1.txt"
-    expected_answer = 31
-    algorithm_answer = algorithm_2(filename)
-    return expected_answer == algorithm_answer
+    expected_answer_1 = 80
+    algorithm_answer_1 = algorithm_2(filename)
+    filename = "./input_files/test_2.txt"
+    expected_answer_2 = 436
+    algorithm_answer_2 = algorithm_2(filename)
+    filename = "./input_files/test_3.txt"
+    expected_answer_3 = 1206
+    algorithm_answer_3 = algorithm_2(filename)
+    return (
+        expected_answer_1 == algorithm_answer_1
+        and expected_answer_2 == algorithm_answer_2
+        and expected_answer_3 == algorithm_answer_3
+    )
 
 
 def solve_part1() -> int:

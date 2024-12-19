@@ -103,6 +103,7 @@ def calculate_trailhead_score_part1(
         next_positions = new_positions
     return trailhead_score
 
+
 def calculate_trailhead_score_part2(
     topographic_map: list[str], position: tuple[int, int]
 ) -> int:
