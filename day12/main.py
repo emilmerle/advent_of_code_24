@@ -1,6 +1,7 @@
 from pathlib import Path
 
 DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+DIRECTIONS_ALL = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, -1), (-1, 1)]
 
 """
 Idea Part 1:
@@ -62,7 +63,7 @@ def algorithm_2(input_filename: str) -> int:
             current_region = neighbors
             regions.append(current_region)
 
-    total_price = sum(get_price_of_region(garden, region) for region in regions)
+    total_price = sum(get_bulk_price_of_region(region) for region in regions)
     return total_price
 
 
@@ -120,20 +121,41 @@ def get_price_of_region(garden: list[str], region: list[tuple[int, int]]) -> int
     return perimeter * area
 
 
-def get_bulk_price_of_region(garden: list[str], region: list[tuple[int, int]]) -> int:
+def get_bulk_price_of_region(region: list[tuple[int, int]]) -> int:
     area = len(region)
-    edges = 0
-    # Number of edges is equal to the number of corners
-    # TODO
+    edges = get_corners_of_region(region)
     return area * edges
 
 
-def get_perimeter_positions(
-    garden: list[str], region: list[tuple[int, int]]
-) -> list[tuple[int, int]]:
-    # TODO
-    # Get perimeter and count number of corners there
-    return
+def get_corners_of_region(region: list[tuple[int, int]]) -> int:
+    corners = 0
+    for x, y in region:
+        up = (x - 1, y)
+        right = (x, y + 1)
+        down = (x + 1, y)
+        left = (x, y - 1)
+        up_right = (x - 1, y + 1)
+        down_right = (x + 1, y + 1)
+        down_left = (x + 1, y - 1)
+        up_left = (x - 1, y - 1)
+        if up not in region and right not in region:
+            corners += 1
+        if right not in region and down not in region:
+            corners += 1
+        if down not in region and left not in region:
+            corners += 1
+        if left not in region and up not in region:
+            corners += 1
+
+        if up in region and right in region and up_right not in region:
+            corners += 1
+        if right in region and down in region and down_right not in region:
+            corners += 1
+        if down in region and left in region and down_left not in region:
+            corners += 1
+        if left in region and up in region and up_left not in region:
+            corners += 1
+    return corners
 
 
 # Testing and solving functions
