@@ -10,15 +10,28 @@ Idea Part 1:
 
 def algorithm_1(input_filename: str) -> int:
     path = Path(input_filename)
+    visited_positions = []
+    regions = []
+    garden = []
+    dim_x, dim_y = 0, 0
     with open(path, "r") as file:
         garden = [line[:-1] for line in file]
         dim_x, dim_y = len(garden), len(garden[0])
-        region_map = []
-        for index_x in range(dim_x):
-            for index_y in range(dim_y):
-                pass
-                
 
+    for index_x in range(dim_x):
+        for index_y in range(dim_y):
+            position = (index_x, index_y)
+            # Skip current position if already visited
+            if position in visited_positions:
+                continue
+
+            neighbors = get_whole_region(garden, position)
+            visited_positions += neighbors
+            current_region = neighbors
+            regions.append(current_region)
+
+    total_price = sum(get_price_of_region(garden, region) for region in regions)
+    return total_price
 
 
 """
@@ -37,6 +50,7 @@ def algorithm_2(input_filename: str) -> int:
 def is_out_of_bounds(position: tuple[int, int], dim_x: int, dim_y: int) -> bool:
     return not (0 <= position[0] < dim_x) or not (0 <= position[1] < dim_y)
 
+
 def get_number_of_same_neighbors(garden: list[str], position: tuple[int, int]) -> int:
     dim_x, dim_y = len(garden), len(garden[0])
     plant_type = garden[position[0]][position[1]]
@@ -48,7 +62,10 @@ def get_number_of_same_neighbors(garden: list[str], position: tuple[int, int]) -
                 number_of_same_neighbors += 1
     return number_of_same_neighbors
 
-def get_same_neighboring_plants(garden: list[str], position: tuple[int, int]) -> list[tuple[int, int]]:
+
+def get_same_neighboring_plants(
+    garden: list[str], position: tuple[int, int]
+) -> list[tuple[int, int]]:
     dim_x, dim_y = len(garden), len(garden[0])
     plant_type = garden[position[0]][position[1]]
     nieghboring_plants = []
@@ -58,6 +75,30 @@ def get_same_neighboring_plants(garden: list[str], position: tuple[int, int]) ->
             if garden[next_position[0]][next_position[1]] == plant_type:
                 nieghboring_plants.append(next_position)
     return nieghboring_plants
+
+
+def get_whole_region(
+    garden: list[str], position: tuple[int, int]
+) -> list[tuple[int, int]]:
+    current_region = [position]
+    current_neighbors = get_same_neighboring_plants(garden, position)
+    while current_neighbors != []:
+        next_neighbors = []
+        for current_neighbor in current_neighbors:
+            current_region.append(current_neighbor)
+            next_neighbors += get_same_neighboring_plants(garden, current_neighbor)
+        current_neighbors = list(set(next_neighbors) - set(current_region))
+    return current_region
+
+
+def get_price_of_region(garden: list[str], region: list[tuple[int, int]]) -> int:
+    area = len(region)
+    perimeter = 0
+    for position in region:
+        borders = 4 - get_number_of_same_neighbors(garden, position)
+        perimeter += borders
+    return perimeter * area
+
 
 # Testing and solving functions
 def test_part1() -> bool:
@@ -70,7 +111,11 @@ def test_part1() -> bool:
     filename = "./input_files/test_3.txt"
     expected_answer_3 = 1930
     algorithm_answer_3 = algorithm_1(filename)
-    return expected_answer_1 == algorithm_answer_1 and expected_answer_2 == algorithm_answer_2 and expected_answer_3 == algorithm_answer_3
+    return (
+        expected_answer_1 == algorithm_answer_1
+        and expected_answer_2 == algorithm_answer_2
+        and expected_answer_3 == algorithm_answer_3
+    )
 
 
 def test_part2() -> bool:
