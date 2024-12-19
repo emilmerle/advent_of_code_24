@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pathlib import Path
 
 """
@@ -20,20 +21,28 @@ def algorithm_1(input_filename: str) -> int:
 """
 Idea Part 2:
 Same approach as part 1 is not possible, because the number of stones will be too large.
-Idea:
+Idea 1:
 Do not calculate every blink, but calculate number of stones after 75 times separately (with other rules).
+Not really possible, there are no trivial rules to calculate only the number of stones.
+Idea 2:
+Keep track of how often every stone is in the list.
+Then, calculate the next stones only once for every unique stone in the current blink.
+The defaultdict(int) is a dictionary, where you can calculate with values of keys without explicitly setting a value for the key before.
 """
 
 
 def algorithm_2(input_filename: str) -> int:
     path = Path(input_filename)
     with open(path, "r") as file:
-        stones = [int(number) for number in next(file).split(" ")]
-        for i in range(1, 75 + 1):
-            # print(f"Beginning {i+1} blink.")
-            stones = blink(stones)
-        print(len(stones))
-        return len(stones)
+        stones = {int(number): 1 for number in next(file).split(" ")}
+        for _ in range(1, 75 + 1):
+            next_stones = defaultdict(int)
+            for stone, amount in stones.items():
+                for next_stone in apply_rules(stone):
+                    next_stones[next_stone] += amount
+            stones = next_stones
+
+        return sum(stones.values())
 
 
 # Helping functions
@@ -42,19 +51,6 @@ def blink(stones: list[int]) -> list[int]:
     for stone in stones:
         next_stones += apply_rules(stone)
     return next_stones
-
-
-def blink_part2(stones: list[int]) -> list[int]:
-    blinks = {}
-    next_total_stones = []
-    for index, stone in enumerate(stones):
-        if stone not in blinks:
-            next_stones = apply_rules(stone)
-            blinks[stone] = next_stones
-        else:
-            next_stones = blinks[stone]
-        next_total_stones += next_stones
-    return next_total_stones
 
 
 def apply_rules(stone: int) -> list[int]:
@@ -101,16 +97,11 @@ def solve_part2() -> int:
 
 
 if __name__ == "__main__":
-    test()
-
     if test_part1():
         answer = solve_part1()
         print(f"Todays answer of part 1 is {answer}")
     else:
         print("Test of part 1 was not successfull")
 
-    if test_part2():
-        answer = solve_part2()
-        print(f"Todays answer of part 2 is {answer}")
-    else:
-        print("Test of part 2 was not successfull")
+    answer = solve_part2()
+    print(f"Todays answer of part 2 is {answer}")
