@@ -75,7 +75,7 @@ def algorithm_2(input_filename: str, is_test: bool) -> int:
             velocity = int(velocity_matches[0][0]), int(velocity_matches[0][1])
             robots.append((position, velocity))
 
-    for index in range(1, 1000):
+    for index in range(1, 10000):
         time = index
         end_positions= []
         for robot_position, robot_velocity in robots:
@@ -83,7 +83,6 @@ def algorithm_2(input_filename: str, is_test: bool) -> int:
             final_pos_y = (robot_position[1] + time * robot_velocity[1]) % dim_y
             end_positions.append((final_pos_x, final_pos_y))
         
-        print(len(set(end_positions)), len(end_positions))
         if len(set(end_positions)) == len(end_positions):
             return index
 
