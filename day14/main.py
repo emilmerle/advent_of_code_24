@@ -59,8 +59,36 @@ Idea Part 2:
 
 def algorithm_2(input_filename: str, is_test: bool) -> int:
     path = Path(input_filename)
+    time = 100
+    dim_x, dim_y = 101, 103
+    if is_test:
+        dim_x, dim_y = 11, 7
+    position_pattern = r"(\d{1,3}),(\d{1,3})"
+    velocity_pattern = r"(-?\d{1,3}),(-?\d{1,3})"
+    robots = []
     with open(path, "r") as file:
-        pass
+        for line in file:
+            position_string, velocity_string = line.split(" ")[0], line.split(" ")[1]
+            position_matches = re.findall(position_pattern, position_string)
+            position = int(position_matches[0][0]), int(position_matches[0][1])
+            velocity_matches = re.findall(velocity_pattern, velocity_string)
+            velocity = int(velocity_matches[0][0]), int(velocity_matches[0][1])
+            robots.append((position, velocity))
+
+    for index in range(1, 1000):
+        time = index
+        end_positions= []
+        for robot_position, robot_velocity in robots:
+            final_pos_x = (robot_position[0] + time * robot_velocity[0]) % dim_x
+            final_pos_y = (robot_position[1] + time * robot_velocity[1]) % dim_y
+            end_positions.append((final_pos_x, final_pos_y))
+        
+        print(len(set(end_positions)), len(end_positions))
+        if len(set(end_positions)) == len(end_positions):
+            return index
+
+
+
 
 
 # Helping functions
@@ -71,13 +99,6 @@ def test_part1() -> bool:
     filename = "./input_files/test.txt"
     expected_answer = 12
     algorithm_answer = algorithm_1(filename, True)
-    return expected_answer == algorithm_answer
-
-
-def test_part2() -> bool:
-    filename = "./input_files/test.txt"
-    expected_answer = 31
-    algorithm_answer = algorithm_2(filename, True)
     return expected_answer == algorithm_answer
 
 
@@ -100,8 +121,5 @@ if __name__ == "__main__":
     else:
         print("Test of part 1 was not successfull")
 
-    if test_part2():
-        answer = solve_part2()
-        print(f"Todays answer of part 2 is {answer}")
-    else:
-        print("Test of part 2 was not successfull")
+    answer = solve_part2()
+    print(f"Todays answer of part 2 is {answer}")
