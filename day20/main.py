@@ -31,7 +31,7 @@ def algorithm_1(input_filename: str) -> int:
     possible_cheat_counter = 0
     possible_cheat_list = []
     for value in race_dict.values():
-        for pos in get_cheat_outcomes(racetrack, value, cheat_distance):
+        for pos in get_cheat_outcomes_part_1(racetrack, value, cheat_distance):
             if (
                 pos
                 in list(race_dict.values())[
@@ -53,9 +53,41 @@ Idea Part 2:
 
 
 def algorithm_2(input_filename: str) -> int:
+    min_save_time = 100
+    cheat_distance = 20
     path = Path(input_filename)
+    racetrack = []
+    starting_pos = (-1, -1)
+    finish_pos = (-1, -1)
     with open(path, "r") as file:
-        pass
+        x_index = 0
+        for line in file:
+            racetrack.append(line[:-1])
+            if "S" in line:
+                starting_pos = (x_index, line.index("S"))
+            elif "E" in line:
+                finish_pos = (x_index, line.index("E"))
+            x_index += 1
+
+    race_dict = get_race_dict(racetrack, starting_pos, finish_pos)
+    possible_cheat_counter = 0
+    possible_cheat_list = []
+    for value in race_dict.values():
+        print(f"Current position: {value}")
+        for pos in get_cheat_outcomes_part_2(racetrack, value, cheat_distance):
+            distance = get_distance(value, pos)
+            if (
+                pos
+                in list(race_dict.values())[
+                    list(race_dict.values()).index(value) + distance + min_save_time :
+                ]
+            ):
+                possible_cheat_counter += 1
+                possible_cheat_list.append(pos)
+
+    # print(possible_cheat_counter, possible_cheat_list)
+
+    return possible_cheat_counter
 
 
 # Helping functions
@@ -101,7 +133,7 @@ def get_race_length(race_dict: dict) -> int:
     return len(race_dict) - 1
 
 
-def get_cheat_outcomes(
+def get_cheat_outcomes_part_1(
     racetrack: list[str], position: tuple[int, int], cheat_distance: int
 ) -> list[tuple[int, int]]:
     dim_x, dim_y = len(racetrack), len(racetrack[0])
@@ -119,17 +151,35 @@ def get_cheat_outcomes(
     return possible_outcomes
 
 
+def get_cheat_outcomes_part_2(
+    racetrack: list[str], position: tuple[int, int], cheat_distance: int
+) -> list[tuple[int, int]]:
+    dim_x, dim_y = len(racetrack), len(racetrack[0])
+    possible_outcomes = []
+    for i in range(-cheat_distance - 1, cheat_distance + 2):
+        for j in range(-cheat_distance - 1, cheat_distance + 2):
+            possible_outcomes.append((position[0] + i, position[1] + j))
+    possible_outcomes = [
+        pos
+        for pos in possible_outcomes
+        if not is_out_of_bounds(pos, dim_x, dim_y)
+        and pos != position
+        and get_distance(position, pos) <= cheat_distance
+    ]
+    return possible_outcomes
+
+
 # Testing and solving functions
 def test_part1() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 0
+    expected_answer = 1
     algorithm_answer = algorithm_1(filename)
     return expected_answer == algorithm_answer
 
 
 def test_part2() -> bool:
     filename = "./input_files/test.txt"
-    expected_answer = 31
+    expected_answer = 0
     algorithm_answer = algorithm_2(filename)
     return expected_answer == algorithm_answer
 

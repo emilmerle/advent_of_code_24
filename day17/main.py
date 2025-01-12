@@ -15,10 +15,9 @@ def algorithm_1(input_filename: str) -> int:
         b = int(next(file)[12:-1])
         c = int(next(file)[12:-1])
         next(file)
-        program = [int(number) for number in next(file)[9:-1].split(",")]
-    
-    print(get_output(0, 2, 8, 0, 0))
-    output = ""
+        program = [int(number) for number in next(file)[9:].split(",")]
+
+    output = run_program(program, a, b, c)
 
     return output
 
@@ -36,35 +35,82 @@ def algorithm_2(input_filename: str) -> int:
 
 
 # Helping functions
-def get_output(instruction: int, operand: int, a: int, b: int, c:int ) -> tuple[int, int, int, str]:
+def run_program(program: list[int], a: int, b: int, c: int) -> str:
+    instruction_counter = 0
+    output = ""
+    new_a, new_b, new_c = a, b, c
+    while instruction_counter <= len(program) - 2:
+        new_a, new_b, new_c, step_output, instruction_counter = get_output(
+            program[instruction_counter],
+            program[instruction_counter + 1],
+            new_a,
+            new_b,
+            new_c,
+            instruction_counter,
+        )
+        if step_output != "":
+            output = output + "," + step_output
+
+    return output[1:]
+
+
+def get_output(
+    instruction: int, operand: int, a: int, b: int, c: int, ins_counter: int
+) -> tuple[int, int, int, str, int]:
     new_a, new_b, new_c = a, b, c
     output = ""
     match instruction:
         # division
         case 0:
             numerator = a
-            denominator = 2**get_combo_operand(operand, a, b, c)
-            return (new_a, new_b, new_c, f"{int(numerator/denominator)}")
+            denominator = 2 ** get_combo_operand(operand, a, b, c)
+            return (int(numerator / denominator), new_b, new_c, "", ins_counter + 2)
         # Bitwise XOR
         case 1:
             first = b
             second = operand
-            return (new_a, first | second, new_c, "")
+            return (new_a, first ^ second, new_c, "", ins_counter + 2)
         # Combo operand modulo 8
         case 2:
-            pass
+            return (
+                new_a,
+                get_combo_operand(operand, a, b, c) % 8,
+                new_c,
+                "",
+                ins_counter + 2,
+            )
+        # Jump
         case 3:
-            pass
+            if a == 0:
+                return (new_a, new_b, new_c, "", ins_counter + 2)
+            return (new_a, new_b, new_c, "", operand)
+        # Bitwise XOR
         case 4:
-            pass
+            first = b
+            second = c
+            return (new_a, first ^ second, new_c, "", ins_counter + 2)
+        # Modulo 8
         case 5:
-            pass
+            return (
+                new_a,
+                new_b,
+                new_c,
+                f"{get_combo_operand(operand, a, b, c) % 8}",
+                ins_counter + 2,
+            )
+        # division
         case 6:
-            pass
+            numerator = a
+            denominator = 2 ** get_combo_operand(operand, a, b, c)
+            return (new_a, int(numerator / denominator), new_c, "", ins_counter + 2)
+        # division
         case 7:
-            pass
+            numerator = a
+            denominator = 2 ** get_combo_operand(operand, a, b, c)
+            return (new_a, new_b, int(numerator / denominator), "", ins_counter + 2)
 
     return (new_a, new_b, new_c, output)
+
 
 def get_combo_operand(operand: int, a: int, b: int, c: int) -> int:
     match operand:
@@ -76,6 +122,7 @@ def get_combo_operand(operand: int, a: int, b: int, c: int) -> int:
             return b
         case 6:
             return c
+
 
 # Testing and solving functions
 def test_part1() -> bool:

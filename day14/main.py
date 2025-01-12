@@ -16,7 +16,7 @@ def algorithm_1(input_filename: str, is_test: bool) -> int:
         dim_x, dim_y = 11, 7
     position_pattern = r"(\d{1,3}),(\d{1,3})"
     velocity_pattern = r"(-?\d{1,3}),(-?\d{1,3})"
-    quadrant_counter = [0,0,0,0]
+    quadrant_counter = [0, 0, 0, 0]
     with open(path, "r") as file:
         for line in file:
             position_string, velocity_string = line.split(" ")[0], line.split(" ")[1]
@@ -27,10 +27,10 @@ def algorithm_1(input_filename: str, is_test: bool) -> int:
 
             final_pos_x = (position[0] + time * velocity[0]) % dim_x
             final_pos_y = (position[1] + time * velocity[1]) % dim_y
-            
+
             cutoff_x = dim_x // 2
             cutoff_y = dim_y // 2
-            
+
             if final_pos_x < cutoff_x:
                 if final_pos_y < cutoff_y:
                     quadrant_counter[0] += 1
@@ -44,11 +44,6 @@ def algorithm_1(input_filename: str, is_test: bool) -> int:
 
     total_valid_robots = math.prod(quadrant_counter)
     return total_valid_robots
-            
-            
-
-
-
 
 
 """
@@ -77,17 +72,14 @@ def algorithm_2(input_filename: str, is_test: bool) -> int:
 
     for index in range(1, 10000):
         time = index
-        end_positions= []
+        end_positions = []
         for robot_position, robot_velocity in robots:
             final_pos_x = (robot_position[0] + time * robot_velocity[0]) % dim_x
             final_pos_y = (robot_position[1] + time * robot_velocity[1]) % dim_y
             end_positions.append((final_pos_x, final_pos_y))
-        
+
         if len(set(end_positions)) == len(end_positions):
             return index
-
-
-
 
 
 # Helping functions

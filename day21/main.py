@@ -24,13 +24,8 @@ NUMPAD = {
     "9": (3, 2),
 }
 
-KEYPAD = {
-    "A": (1, 2),
-    "<": (0, 0),
-    "v": (0, 1),
-    ">": (0, 2),
-    "^": (1, 1)
-}
+KEYPAD = {"A": (1, 2), "<": (0, 0), "v": (0, 1), ">": (0, 2), "^": (1, 1)}
+
 
 def algorithm_1(input_filename: str) -> int:
     path = Path(input_filename)
@@ -45,7 +40,7 @@ def algorithm_1(input_filename: str) -> int:
         temp_sum = len(presses) * get_numeric_part(code)
         total_sum += temp_sum
         print(len(presses), get_numeric_part(code))
-    
+
     print(total_sum)
     return total_sum
 
@@ -65,6 +60,7 @@ def algorithm_2(input_filename: str) -> int:
 # Helping functions
 def get_numeric_part(code: str) -> int:
     return int(code[:3])
+
 
 def get_keypresses_for_code(code: str, keypad: dict) -> str:
     current_pos = keypad[ACTIVATE]
@@ -93,9 +89,6 @@ def get_keypresses_for_code(code: str, keypad: dict) -> str:
                 if "^>" in keystrokes:
                     keystrokes.replace("^>", ">^")
 
-        
-
-
         # print(distance_vector, current_pos, next_key_pos, keystrokes)
         keypresses = keypresses + keystrokes + ACTIVATE
         current_pos = next_key_pos
@@ -114,10 +107,11 @@ def get_keypresses_for_key(distance_vector: tuple[int, int]) -> str:
     if distance_vector[0] < 0:
         keypresses = keypresses + (abs(distance_vector[0]) * UP)
     return keypresses
-        
 
 
-def get_distance_vector(first: tuple[int, int], second: tuple[int, int]) -> tuple[int, int]:
+def get_distance_vector(
+    first: tuple[int, int], second: tuple[int, int]
+) -> tuple[int, int]:
     return (first[0] - second[0], first[1] - second[1])
 
 
@@ -129,7 +123,6 @@ def solve_code_part_1(code: str) -> str:
     presses = get_keypresses_for_code(presses, KEYPAD)
     print(presses)
     return presses
-
 
 
 # Testing and solving functions
